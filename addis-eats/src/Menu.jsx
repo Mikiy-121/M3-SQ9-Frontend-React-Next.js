@@ -4,7 +4,7 @@ import Card from "./Card";
 import Dish from "./Dish";
 import CategoryBar from "./CategoryBar";
 
-export default function Menu({ dishes, onAddDish }) {
+export default function Menu({ dishes, onQtyChange }) {
   const [category, setCategory] = useState("");
 
   const categories = [...new Set(dishes.map((dish) => dish.category))];
@@ -33,7 +33,7 @@ export default function Menu({ dishes, onAddDish }) {
               name={dish.name}
               price={dish.price}
               spicy={dish.spicy}
-              onAdd={onAddDish}
+              onQtyChange={onQtyChange}
             />
           ))}
         </ul>
@@ -52,5 +52,5 @@ Menu.propTypes = {
       spicy: PropTypes.bool,
     }),
   ).isRequired,
-  onAddDish: PropTypes.func,
+  onQtyChange: PropTypes.func,
 };

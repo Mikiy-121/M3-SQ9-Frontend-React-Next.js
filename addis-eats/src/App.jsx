@@ -8,8 +8,8 @@ import "./App.css";
 export default function App() {
   const [total, setTotal] = useState(0);
 
-  function handleAddDish(price) {
-    setTotal((t) => t + price);
+  function handleQtyChange(delta) {
+    setTotal((t) => t + delta);
   }
 
   return (
@@ -17,7 +17,7 @@ export default function App() {
       <Header />
       <main className="page__content">
         <div className="page__stack">
-          <Menu dishes={menu} onAddDish={handleAddDish} />
+          <Menu dishes={menu} onQtyChange={handleQtyChange} />
           <OrderForm total={total} />
         </div>
       </main>

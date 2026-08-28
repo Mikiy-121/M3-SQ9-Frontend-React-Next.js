@@ -6,13 +6,19 @@ export default function Dish({
   price,
   spicy = false,
   currency = "ETB",
-  onAdd,
+  onQtyChange,
 }) {
   const [count, setCount] = useState(0);
 
-  function handleAdd() {
+  function handleIncrement() {
     setCount((c) => c + 1);
-    onAdd?.(price);
+    onQtyChange?.(price);
+  }
+
+  function handleDecrement() {
+    if (count === 0) return;
+    setCount((c) => c - 1);
+    onQtyChange?.(-price);
   }
 
   return (
@@ -25,14 +31,28 @@ export default function Dish({
       <span className="dish__price">
         {price} {currency}
       </span>
-      <button
-        type="button"
-        className="dish__add"
-        onClick={handleAdd}
-        aria-label={`Add ${name} to order`}
-      >
-        Add{count > 0 ? ` (${count})` : ""}
-      </button>
+      <div className="dish__stepper">
+        <button
+          type="button"
+          className="dish__stepper-btn"
+          onClick={handleDecrement}
+          disabled={count === 0}
+          aria-label={`Remove one ${name}`}
+        >
+          −
+        </button>
+        <span className="dish__stepper-count" aria-live="polite">
+          {count}
+        </span>
+        <button
+          type="button"
+          className="dish__stepper-btn"
+          onClick={handleIncrement}
+          aria-label={`Add one ${name}`}
+        >
+          +
+        </button>
+      </div>
     </li>
   );
 }
@@ -42,5 +62,5 @@ Dish.propTypes = {
   price: PropTypes.number.isRequired,
   spicy: PropTypes.bool,
   currency: PropTypes.string,
-  onAdd: PropTypes.func,
+  onQtyChange: PropTypes.func,
 };
