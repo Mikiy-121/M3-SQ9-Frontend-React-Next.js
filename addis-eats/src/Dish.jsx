@@ -1,6 +1,20 @@
+import { useState } from "react";
 import PropTypes from "prop-types";
 
-export default function Dish({ name, price, spicy = false, currency = "ETB" }) {
+export default function Dish({
+  name,
+  price,
+  spicy = false,
+  currency = "ETB",
+  onAdd,
+}) {
+  const [count, setCount] = useState(0);
+
+  function handleAdd() {
+    setCount((c) => c + 1);
+    onAdd?.(price);
+  }
+
   return (
     <li className="dish">
       <span className="dish__name">
@@ -11,6 +25,14 @@ export default function Dish({ name, price, spicy = false, currency = "ETB" }) {
       <span className="dish__price">
         {price} {currency}
       </span>
+      <button
+        type="button"
+        className="dish__add"
+        onClick={handleAdd}
+        aria-label={`Add ${name} to order`}
+      >
+        Add{count > 0 ? ` (${count})` : ""}
+      </button>
     </li>
   );
 }
@@ -20,4 +42,5 @@ Dish.propTypes = {
   price: PropTypes.number.isRequired,
   spicy: PropTypes.bool,
   currency: PropTypes.string,
+  onAdd: PropTypes.func,
 };

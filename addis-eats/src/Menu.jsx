@@ -1,8 +1,14 @@
+import { useState } from "react";
 import PropTypes from "prop-types";
 import Card from "./Card";
 import Dish from "./Dish";
+import CategoryBar from "./CategoryBar";
 
-export default function Menu({ dishes, category = "" }) {
+export default function Menu({ dishes, onAddDish }) {
+  const [category, setCategory] = useState("");
+
+  const categories = [...new Set(dishes.map((dish) => dish.category))];
+
   const shown = category
     ? dishes.filter((dish) => dish.category === category)
     : dishes;
@@ -12,6 +18,11 @@ export default function Menu({ dishes, category = "" }) {
       <p className="menu__label">
         {category ? `${category} dishes` : "Today's menu"}
       </p>
+      <CategoryBar
+        categories={categories}
+        selected={category}
+        onSelect={setCategory}
+      />
       {shown.length === 0 ? (
         <p className="menu__empty">No dishes in this category yet.</p>
       ) : (
@@ -22,6 +33,7 @@ export default function Menu({ dishes, category = "" }) {
               name={dish.name}
               price={dish.price}
               spicy={dish.spicy}
+              onAdd={onAddDish}
             />
           ))}
         </ul>
@@ -40,5 +52,5 @@ Menu.propTypes = {
       spicy: PropTypes.bool,
     }),
   ).isRequired,
-  category: PropTypes.string,
+  onAddDish: PropTypes.func,
 };
