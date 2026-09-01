@@ -1,17 +1,68 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import PropTypes from "prop-types";
 import Card from "./Card";
-import Dish from "./Dish";
 import CategoryBar from "./CategoryBar";
+import DishList from "./DishList";
+import { loadDishes } from "./api";
 
-export default function Menu({ dishes, onQtyChange }) {
+export default function Menu({ onQtyChange }) {
   const [category, setCategory] = useState("");
+  const [dishes, setDishes] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [search, setSearch] = useState("");
+  const searchRef = useRef(null);
+
+  useEffect(() => {
+    searchRef.current?.focus();
+  }, []);
+
+  useEffect(() => {
+    const controller = new AbortController();
+
+    async function run() {
+      setLoading(true);
+      setError("");
+      try {
+        const data = await loadDishes(controller.signal);
+        setDishes(data);
+      } catch (err) {
+        if (err.name !== "AbortError") setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    run();
+
+    return () => controller.abort();
+  }, [category]);
+
+  if (loading) {
+    return (
+      <Card>
+        <p className="menu__label">Loading menu…</p>
+      </Card>
+    );
+  }
+
+  if (error) {
+    return (
+      <Card>
+        <p className="menu__label">Couldn't load the menu</p>
+        <p className="menu__empty">{error}</p>
+      </Card>
+    );
+  }
 
   const categories = [...new Set(dishes.map((dish) => dish.category))];
-
-  const shown = category
+  const byCategory = category
     ? dishes.filter((dish) => dish.category === category)
     : dishes;
+  const term = search.trim().toLowerCase();
+  const shown = term
+    ? byCategory.filter((dish) => dish.name.toLowerCase().includes(term))
+    : byCategory;
 
   return (
     <Card>
@@ -23,34 +74,19 @@ export default function Menu({ dishes, onQtyChange }) {
         selected={category}
         onSelect={setCategory}
       />
-      {shown.length === 0 ? (
-        <p className="menu__empty">No dishes in this category yet.</p>
-      ) : (
-        <ul className="menu__list">
-          {shown.map((dish) => (
-            <Dish
-              key={dish.id}
-              name={dish.name}
-              price={dish.price}
-              spicy={dish.spicy}
-              onQtyChange={onQtyChange}
-            />
-          ))}
-        </ul>
-      )}
+      <input
+        ref={searchRef}
+        type="text"
+        className="menu__search"
+        placeholder="Search dishes…"
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+      />
+      <DishList dishes={shown} onQtyChange={onQtyChange} />
     </Card>
   );
 }
 
 Menu.propTypes = {
-  dishes: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.number.isRequired,
-      name: PropTypes.string.isRequired,
-      price: PropTypes.number.isRequired,
-      category: PropTypes.string.isRequired,
-      spicy: PropTypes.bool,
-    }),
-  ).isRequired,
   onQtyChange: PropTypes.func,
 };

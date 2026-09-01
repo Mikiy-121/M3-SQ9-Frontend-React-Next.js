@@ -2,7 +2,6 @@ import { useState } from "react";
 import Header from "./Header";
 import Menu from "./Menu";
 import OrderForm from "./OrderForm";
-import { menu } from "./data";
 import "./App.css";
 
 export default function App() {
@@ -17,7 +16,7 @@ export default function App() {
       <Header />
       <main className="page__content">
         <div className="page__stack">
-          <Menu dishes={menu} onQtyChange={handleQtyChange} />
+          <Menu onQtyChange={handleQtyChange} />
           <OrderForm total={total} />
         </div>
       </main>
