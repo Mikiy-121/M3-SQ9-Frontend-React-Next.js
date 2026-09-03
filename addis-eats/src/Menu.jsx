@@ -11,7 +11,7 @@ export default function Menu() {
   const searchRef = useRef(null);
 
   const { data, loading, error } = useFetch(loadDishes, [category]);
-  const dishes = data ?? [];
+  const dishes = useMemo(() => data ?? [], [data]);
 
   useEffect(() => {
     searchRef.current?.focus();
