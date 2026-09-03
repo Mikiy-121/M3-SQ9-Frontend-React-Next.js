@@ -1,24 +1,25 @@
-import { useState } from "react";
+import { useContext } from "react";
 import PropTypes from "prop-types";
+import { CartContext } from "./cart/CartContext";
 
 export default function Dish({
+  id,
   name,
   price,
   spicy = false,
   currency = "ETB",
-  onQtyChange,
 }) {
-  const [count, setCount] = useState(0);
+  const { items, dispatch } = useContext(CartContext);
+  const cartItem = items.find((item) => item.id === id);
+  const qty = cartItem ? cartItem.qty : 0;
 
   function handleIncrement() {
-    setCount((c) => c + 1);
-    onQtyChange?.(price);
+    dispatch({ type: "add", dish: { id, name, price, spicy } });
   }
 
   function handleDecrement() {
-    if (count === 0) return;
-    setCount((c) => c - 1);
-    onQtyChange?.(-price);
+    if (qty === 0) return;
+    dispatch({ type: "remove", id });
   }
 
   return (
@@ -36,13 +37,13 @@ export default function Dish({
           type="button"
           className="dish__stepper-btn"
           onClick={handleDecrement}
-          disabled={count === 0}
+          disabled={qty === 0}
           aria-label={`Remove one ${name}`}
         >
           −
         </button>
         <span className="dish__stepper-count" aria-live="polite">
-          {count}
+          {qty}
         </span>
         <button
           type="button"
@@ -58,9 +59,9 @@ export default function Dish({
 }
 
 Dish.propTypes = {
+  id: PropTypes.number.isRequired,
   name: PropTypes.string.isRequired,
   price: PropTypes.number.isRequired,
   spicy: PropTypes.bool,
   currency: PropTypes.string,
-  onQtyChange: PropTypes.func,
 };

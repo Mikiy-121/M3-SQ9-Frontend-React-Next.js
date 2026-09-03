@@ -1,42 +1,37 @@
-import { useEffect, useRef, useState } from "react";
-import PropTypes from "prop-types";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Card from "./Card";
 import CategoryBar from "./CategoryBar";
 import DishList from "./DishList";
 import { loadDishes } from "./api";
+import { useFetch } from "./hooks/useFetch";
 
-export default function Menu({ onQtyChange }) {
+export default function Menu() {
   const [category, setCategory] = useState("");
-  const [dishes, setDishes] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
   const [search, setSearch] = useState("");
   const searchRef = useRef(null);
+
+  const { data, loading, error } = useFetch(loadDishes, [category]);
+  const dishes = data ?? [];
 
   useEffect(() => {
     searchRef.current?.focus();
   }, []);
 
-  useEffect(() => {
-    const controller = new AbortController();
+  const categories = useMemo(
+    () => [...new Set(dishes.map((dish) => dish.category))],
+    [dishes],
+  );
 
-    async function run() {
-      setLoading(true);
-      setError("");
-      try {
-        const data = await loadDishes(controller.signal);
-        setDishes(data);
-      } catch (err) {
-        if (err.name !== "AbortError") setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    run();
-
-    return () => controller.abort();
-  }, [category]);
+  const shown = useMemo(() => {
+    const byCategory = category
+      ? dishes.filter((dish) => dish.category === category)
+      : dishes;
+    const term = search.trim().toLowerCase();
+    const filtered = term
+      ? byCategory.filter((dish) => dish.name.toLowerCase().includes(term))
+      : byCategory;
+    return [...filtered].sort((a, b) => a.price - b.price);
+  }, [dishes, category, search]);
 
   if (loading) {
     return (
@@ -54,15 +49,6 @@ export default function Menu({ onQtyChange }) {
       </Card>
     );
   }
-
-  const categories = [...new Set(dishes.map((dish) => dish.category))];
-  const byCategory = category
-    ? dishes.filter((dish) => dish.category === category)
-    : dishes;
-  const term = search.trim().toLowerCase();
-  const shown = term
-    ? byCategory.filter((dish) => dish.name.toLowerCase().includes(term))
-    : byCategory;
 
   return (
     <Card>
@@ -82,11 +68,7 @@ export default function Menu({ onQtyChange }) {
         value={search}
         onChange={(e) => setSearch(e.target.value)}
       />
-      <DishList dishes={shown} onQtyChange={onQtyChange} />
+      <DishList dishes={shown} />
     </Card>
   );
 }
-
-Menu.propTypes = {
-  onQtyChange: PropTypes.func,
-};

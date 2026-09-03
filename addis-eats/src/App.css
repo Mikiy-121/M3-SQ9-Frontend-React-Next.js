@@ -21,6 +21,27 @@
   margin-bottom: 48px;
 }
 
+.site-header__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  text-align: left;
+  margin-bottom: 12px;
+}
+
+.site-header__cart-badge {
+  flex-shrink: 0;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: var(--teal);
+  color: #fff;
+  font-family: "Work Sans", sans-serif;
+  font-weight: 600;
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
 .site-header__eyebrow {
   margin: 0 0 8px;
   font-size: 0.75rem;
@@ -261,6 +282,18 @@
   color: var(--turmeric);
   font-weight: 600;
   text-align: center;
+}
+
+.order-form__items {
+  list-style: none;
+  margin: 0;
+  padding: 0 0 16px;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.9rem;
+  color: var(--ink);
 }
 
 .order-form__field {

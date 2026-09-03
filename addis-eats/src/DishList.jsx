@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
 import Dish from "./Dish";
 
-export default function DishList({ dishes, onQtyChange }) {
+export default function DishList({ dishes }) {
   if (dishes.length === 0) {
     return <p className="menu__empty">No dishes in this category yet.</p>;
   }
@@ -11,10 +11,10 @@ export default function DishList({ dishes, onQtyChange }) {
       {dishes.map((dish) => (
         <Dish
           key={dish.id}
+          id={dish.id}
           name={dish.name}
           price={dish.price}
           spicy={dish.spicy}
-          onQtyChange={onQtyChange}
         />
       ))}
     </ul>
@@ -31,5 +31,4 @@ DishList.propTypes = {
       spicy: PropTypes.bool,
     }),
   ).isRequired,
-  onQtyChange: PropTypes.func,
 };

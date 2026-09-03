@@ -1,5 +1,5 @@
-import { useState } from "react";
-import PropTypes from "prop-types";
+import { useContext, useState } from "react";
+import { CartContext } from "./cart/CartContext";
 
 const TELEBIRR_PATTERN = /^(?:\+251|251|0)9\d{8}$/;
 
@@ -7,12 +7,14 @@ function isValidPhone(phone) {
   return TELEBIRR_PATTERN.test(phone.trim());
 }
 
-export default function OrderForm({ total, currency = "ETB", onSubmit }) {
+export default function OrderForm() {
+  const { items, total, dispatch } = useContext(CartContext);
   const [fields, setFields] = useState({ name: "", phone: "", area: "" });
   const [submitted, setSubmitted] = useState(false);
 
   const phoneValid = fields.phone === "" || isValidPhone(fields.phone);
   const canSubmit =
+    items.length > 0 &&
     fields.name.trim() !== "" &&
     fields.area.trim() !== "" &&
     isValidPhone(fields.phone);
@@ -25,13 +27,23 @@ export default function OrderForm({ total, currency = "ETB", onSubmit }) {
   function handleSubmit(event) {
     event.preventDefault();
     if (!canSubmit) return;
-    onSubmit?.(fields);
     setSubmitted(true);
+    dispatch({ type: "clear" });
   }
 
   return (
     <form className="order-form" onSubmit={handleSubmit}>
       <p className="order-form__label">Delivery details</p>
+
+      {items.length > 0 && (
+        <ul className="order-form__items">
+          {items.map((item) => (
+            <li key={item.id}>
+              {item.qty} × {item.name}
+            </li>
+          ))}
+        </ul>
+      )}
 
       <label className="order-form__field">
         <span className="order-form__field-label">Name</span>
@@ -77,9 +89,7 @@ export default function OrderForm({ total, currency = "ETB", onSubmit }) {
 
       <div className="order-form__total">
         <span>Order total</span>
-        <span>
-          {total} {currency}
-        </span>
+        <span>{total} ETB</span>
       </div>
 
       <button
@@ -98,9 +108,3 @@ export default function OrderForm({ total, currency = "ETB", onSubmit }) {
     </form>
   );
 }
-
-OrderForm.propTypes = {
-  total: PropTypes.number.isRequired,
-  currency: PropTypes.string,
-  onSubmit: PropTypes.func,
-};
