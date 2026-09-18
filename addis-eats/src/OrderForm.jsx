@@ -1,5 +1,6 @@
-import { useContext, useState } from "react";
-import { CartContext } from "./cart/CartContext";
+import { useState } from "react";
+import { useCart, selectItems, selectTotal } from "./cart/cartStore";
+import { useAuth } from "./auth/useAuth";
 
 const TELEBIRR_PATTERN = /^(?:\+251|251|0)9\d{8}$/;
 
@@ -8,14 +9,18 @@ function isValidPhone(phone) {
 }
 
 export default function OrderForm() {
-  const { items, total, dispatch } = useContext(CartContext);
-  const [fields, setFields] = useState({ name: "", phone: "", area: "" });
+  const items = useCart(selectItems);
+  const total = useCart(selectTotal);
+  const clear = useCart((state) => state.clear);
+  const { user } = useAuth();
+
+  const [fields, setFields] = useState({ phone: "", area: "" });
   const [submitted, setSubmitted] = useState(false);
 
   const phoneValid = fields.phone === "" || isValidPhone(fields.phone);
   const canSubmit =
+    Boolean(user) &&
     items.length > 0 &&
-    fields.name.trim() !== "" &&
     fields.area.trim() !== "" &&
     isValidPhone(fields.phone);
 
@@ -28,7 +33,18 @@ export default function OrderForm() {
     event.preventDefault();
     if (!canSubmit) return;
     setSubmitted(true);
-    dispatch({ type: "clear" });
+    clear();
+  }
+
+  if (!user) {
+    return (
+      <form className="order-form">
+        <p className="order-form__label">Delivery details</p>
+        <p className="order-form__login-required">
+          Log in above to place an order.
+        </p>
+      </form>
+    );
   }
 
   return (
@@ -44,18 +60,6 @@ export default function OrderForm() {
           ))}
         </ul>
       )}
-
-      <label className="order-form__field">
-        <span className="order-form__field-label">Name</span>
-        <input
-          type="text"
-          name="name"
-          value={fields.name}
-          onChange={handleChange}
-          placeholder="Your full name"
-          autoComplete="name"
-        />
-      </label>
 
       <label className="order-form__field">
         <span className="order-form__field-label">TeleBirr phone</span>
@@ -102,7 +106,7 @@ export default function OrderForm() {
 
       {submitted && (
         <p className="order-form__confirmation">
-          Order placed! We&apos;ll confirm with you at {fields.phone}.
+          Order placed! We&apos;ll confirm at {fields.phone}.
         </p>
       )}
     </form>

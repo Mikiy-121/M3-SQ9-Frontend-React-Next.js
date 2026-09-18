@@ -1,6 +1,5 @@
-import { useContext } from "react";
 import PropTypes from "prop-types";
-import { CartContext } from "./cart/CartContext";
+import { useCart, selectQty } from "./cart/cartStore";
 
 export default function Dish({
   id,
@@ -9,17 +8,17 @@ export default function Dish({
   spicy = false,
   currency = "ETB",
 }) {
-  const { items, dispatch } = useContext(CartContext);
-  const cartItem = items.find((item) => item.id === id);
-  const qty = cartItem ? cartItem.qty : 0;
+  const qty = useCart(selectQty(id));
+  const addItem = useCart((state) => state.addItem);
+  const remove = useCart((state) => state.remove);
 
   function handleIncrement() {
-    dispatch({ type: "add", dish: { id, name, price, spicy } });
+    addItem({ id, name, price, spicy });
   }
 
   function handleDecrement() {
     if (qty === 0) return;
-    dispatch({ type: "remove", id });
+    remove(id);
   }
 
   return (
