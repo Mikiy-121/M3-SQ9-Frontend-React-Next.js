@@ -432,7 +432,9 @@
   color: var(--ink);
 }
 
-.order-form__field input {
+.order-form__field input,
+.order-form__field select,
+.order-form__field textarea {
   font-family: "Work Sans", sans-serif;
   font-size: 0.95rem;
   color: var(--ink);
@@ -440,14 +442,18 @@
   border: 1px solid var(--line);
   border-radius: 8px;
   padding: 10px 12px;
+  resize: vertical;
 }
 
-.order-form__field input:focus {
+.order-form__field input:focus,
+.order-form__field select:focus,
+.order-form__field textarea:focus {
   outline: 2px solid var(--teal);
   outline-offset: 1px;
 }
 
-.order-form__field input[aria-invalid="true"] {
+.order-form__field input[aria-invalid="true"],
+.order-form__field select[aria-invalid="true"] {
   border-color: var(--berbere);
 }
 
@@ -456,16 +462,14 @@
   color: var(--berbere);
 }
 
-.order-form__total {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  font-family: "Fraunces", serif;
-  font-weight: 600;
-  font-size: 1.15rem;
-  color: var(--ink);
-  border-top: 1px solid var(--line);
-  padding-top: 16px;
+.order-form__submit-error {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: rgba(161, 54, 43, 0.1);
+  color: var(--berbere);
+  font-size: 0.85rem;
+  text-align: center;
 }
 
 .order-form__submit {

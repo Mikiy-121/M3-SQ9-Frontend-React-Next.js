@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom"; // <-- Added for routing to checkout
 import { useCart, selectItems, selectTotal } from "./cart/cartStore";
 import { useAuth } from "./auth/useAuth";
 
@@ -96,10 +97,35 @@ export default function OrderForm() {
         <span>{total} ETB</span>
       </div>
 
+      {/* NEW: Link to the lazy-loaded Checkout route */}
+      {items.length > 0 && (
+        <Link
+          to="/checkout"
+          className="order-form__checkout-link"
+          style={{
+            display: "block",
+            textAlign: "center",
+            marginTop: "1rem",
+            padding: "0.8rem",
+            backgroundColor: "#007bff",
+            color: "white",
+            textDecoration: "none",
+            borderRadius: "4px",
+            fontWeight: "bold",
+            transition: "background-color 0.2s",
+          }}
+          onMouseEnter={(e) => (e.target.style.backgroundColor = "#0056b3")}
+          onMouseLeave={(e) => (e.target.style.backgroundColor = "#007bff")}
+        >
+          Proceed to Checkout
+        </Link>
+      )}
+
       <button
         type="submit"
         className="order-form__submit"
         disabled={!canSubmit}
+        style={{ marginTop: "0.75rem" }}
       >
         Pay with TeleBirr
       </button>
