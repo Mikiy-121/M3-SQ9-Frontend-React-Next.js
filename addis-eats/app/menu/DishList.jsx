@@ -1,0 +1,11 @@
+import DishCard from "./menu/DishCard";
+
+export default function DishList({ dishes }) {
+  return (
+    <div>
+      {dishes.map((dish) => (
+        <DishCard key={dish.id} dish={dish} />
+      ))}
+    </div>
+  );
+}
