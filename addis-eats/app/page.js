@@ -1,17 +1,18 @@
-import { getDishes } from "./menu/data";
-import DishList from "./menu/DishList";
-import FilterShell from "./menu/FilterShell";
+import Link from "next/link";
 
-export default async function MenuPage() {
-  const dishes = await getDishes();
-
+export default function HomePage() {
   return (
-    <main>
-      <h1>Addis Eats</h1>
+    <section>
+      <h2>Welcome to Addis Eats</h2>
 
-      <FilterShell>
-        <DishList dishes={dishes} />
-      </FilterShell>
-    </main>
+      <p>
+        Discover delicious Ethiopian food and order
+        your favorite dishes.
+      </p>
+
+      <Link href="/menu">
+        View Menu
+      </Link>
+    </section>
   );
 }

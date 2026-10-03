@@ -2,10 +2,16 @@
 
 export default function Error({ error, reset }) {
   return (
-    <div>
+    <section>
       <h2>Something went wrong.</h2>
 
-      <button onClick={() => reset()}>Try again</button>
-    </div>
+      <p>
+        We could not load the menu.
+      </p>
+
+      <button onClick={() => reset()}>
+        Try Again
+      </button>
+    </section>
   );
 }
